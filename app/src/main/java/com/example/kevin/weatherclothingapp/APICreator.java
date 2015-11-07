@@ -60,7 +60,7 @@ public class APICreator {
     public Bitmap getForecastIcon(Integer i) {
         weatherIcon = null;
         String key = getKeyFromRawResource("key");
-        String wuTempUrl = String.format("http://api.wunderground.com/api/%s/forecast/q/MN/Minneapolis.json", key);
+        String wuTempUrl = String.format("http://api.wunderground.com/api/%s/forecast/q/" + WeatherClothingActivity.mLastLocation.getLatitude() + "," + WeatherClothingActivity.mLastLocation.getLongitude() + ".json", key);
         try{
             weatherIcon = new RequestCurrentMplsWeatherIcon().execute(wuTempUrl, Integer.toString(i)).get();
         }
@@ -77,7 +77,7 @@ public class APICreator {
     public String getForecastDay(Integer i) {
         forecastDay = null;
         String key = getKeyFromRawResource("key");
-        String wuTempUrl = String.format("http://api.wunderground.com/api/%s/forecast/q/MN/Minneapolis.json", key);
+        String wuTempUrl = String.format("http://api.wunderground.com/api/%s/forecast/q/" + WeatherClothingActivity.mLastLocation.getLatitude() + "," + WeatherClothingActivity.mLastLocation.getLongitude() + ".json", key);
         try{
             forecastDay = new RequestMinneapolisForecastDay().execute(wuTempUrl, Integer.toString(i)).get();
         }

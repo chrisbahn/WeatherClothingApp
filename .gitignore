@@ -5,5 +5,9 @@
 .DS_Store
 /build
 /captures
-/app/scr/main/res/raw/key.txt
-/app/scr/main/res/raw/etsy_key.txt
+/app/src/main/res/raw/amazon_application_key.txt
+/app/src/main/res/raw/amazon_access_key.txt
+/app/src/main/res/raw/amazon_secret_key.txt
+/app/src/main/res/raw/amazon_associate_id.txt
+/app/src/main/res/raw/key.txt
+/app/src/main/res/raw/etsy_key.txt

@@ -3,24 +3,59 @@ package com.example.kevin.weatherclothingapp;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class WeatherClothingActivity extends ListActivity {
+// code on retrieval of user's current location is modified from this page: http://developer.android.com/training/location/retrieve-current.html and https://github.com/googlesamples/android-play-location/blob/master/BasicLocationSample/app/src/main/java/com/google/android/gms/location/sample/basiclocationsample/MainActivity.java
+public class WeatherClothingActivity extends ListActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    protected static final String TAG = "WeatherClothingActivity";
 
     ListView weatherList;
 
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+
+    /**
+     * Represents a geographical location.
+     */
+    protected static Location mLastLocation;
+
+    protected String mLatitudeLabel;
+    protected String mLongitudeLabel;
+    protected TextView mLatitudeText;
+    protected TextView mLongitudeText;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_clothing);
+
+//        mLatitudeLabel = getResources().getString(R.string.latitude_label);
+//        mLongitudeLabel = getResources().getString(R.string.longitude_label);
+//        mLatitudeText = (TextView) findViewById((R.id.latitude_text));
+//        mLongitudeText = (TextView) findViewById((R.id.longitude_text));
+
+        buildGoogleApiClient();
 
         APICreator apic = new APICreator(this);
         ArrayList<Bitmap> bitmapArrayList = new ArrayList<>();
@@ -33,7 +68,6 @@ public class WeatherClothingActivity extends ListActivity {
             bitmapArrayList.add(weatherIcon);
             dayList.add(day);
         }
-
 
         //sets the list Adapter.
         CustomListAdapter adapter = new CustomListAdapter(this, dayList, bitmapArrayList);
@@ -59,5 +93,50 @@ public class WeatherClothingActivity extends ListActivity {
         });
 
 
+    }
+
+    /**
+     * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        // Provides a simple way of getting a device's location and is well suited for
+        // applications that do not require a fine-grained location and that do not need location
+        // updates. Gets the best and most recent location currently available, which may be null
+        // in rare cases when a location is not available.
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        } else {
+            Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
+        }
+
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 }
