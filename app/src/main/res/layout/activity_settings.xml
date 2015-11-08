@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!--STORE TO SEARCH SECTION-->
+    <TextView
+        android:id="@+id/store_to_search_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Store to search:"
+        />
+    <RadioGroup android:id="@+id/store_to_search_radiogroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/store_to_search_textview" >
+        <RadioButton android:id="@+id/store_to_search_amazon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amazon" />
+        <RadioButton android:id="@+id/store_to_search_etsy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Etsy" />
+    </RadioGroup>
+
+    <!--CATEGORY TO SEARCH SECTION-->
+    <TextView
+        android:id="@+id/category_to_search_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Category to search:"
+        android:layout_below="@id/store_to_search_radiogroup"
+        />
+    <RadioGroup android:id="@+id/category_to_search_radiogroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/category_to_search_textview" >
+        <RadioButton android:id="@+id/category_to_search_mens"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Men's" />
+        <RadioButton android:id="@+id/category_to_search_womens"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Women's" />
+        <RadioButton android:id="@+id/category_to_search_childrens"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Children and Baby" />
+    </RadioGroup>
+
+    <!--ITEM TO SEARCH SECTION-->
+    <TextView
+        android:id="@+id/items_to_search_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Items to search:"
+        android:layout_below="@id/category_to_search_radiogroup"
+        />
+    <RadioGroup android:id="@+id/items_to_search_radiogroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/items_to_search_textview" >
+        <RadioButton android:id="@+id/item_to_search_hats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hats" />
+        <RadioButton android:id="@+id/item_to_search_coats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jackets and Coats" />
+        <RadioButton android:id="@+id/item_to_search_shirts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shirts" />
+        <RadioButton android:id="@+id/item_to_search_dresses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dresses and skirts" />
+        <RadioButton android:id="@+id/item_to_search_pants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pants" />
+        <RadioButton android:id="@+id/item_to_search_suits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Suits, sport coats and blazers" />
+        <RadioButton android:id="@+id/item_to_search_socks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Socks and hosiery" />
+        <RadioButton android:id="@+id/item_to_search_shoes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shoes" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/clickbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_text"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/items_to_search_radiogroup" />
+
+    <WebView
+        android:id="@+id/amazon_results_webview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/clickbutton" />
+
+
+</LinearLayout>

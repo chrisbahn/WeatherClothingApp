@@ -3,9 +3,11 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/etsyImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp" />
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </ListView>
 
 </LinearLayout>

@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/weatherListFragment"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/weatherIconImageView"
+        android:id="@+id/etsyImage"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:padding="5dp"
@@ -20,14 +16,15 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/weatherDayTextView"
+            android:id="@+id/etsyProductName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/weatherConditionsTextView"
+            android:id="@+id/etsyProductPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
+
 </LinearLayout>
