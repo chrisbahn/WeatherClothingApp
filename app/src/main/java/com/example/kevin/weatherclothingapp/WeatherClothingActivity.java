@@ -3,14 +3,14 @@ package com.example.kevin.weatherclothingapp;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListActivity;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,13 +20,17 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 // code on retrieval of user's current location is modified from this page: http://developer.android.com/training/location/retrieve-current.html and https://github.com/googlesamples/android-play-location/blob/master/BasicLocationSample/app/src/main/java/com/google/android/gms/location/sample/basiclocationsample/MainActivity.java
 public class WeatherClothingActivity extends ListActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     protected static final String TAG = "WeatherClothingActivity";
 
     ListView weatherList;
+    private static final int CHANGE_LOCATION_REQUEST_CODE = 0;
+    private Button mChangeLocationButton;
+    private static final String KEY_INDEX = "index";
+    String latitude;
+    String longitude;
 
 
     /**
@@ -43,7 +47,9 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
     protected String mLongitudeLabel;
     protected TextView mLatitudeText;
     protected TextView mLongitudeText;
-
+    private String newCityName;
+    private String newCityZMW;
+    private boolean isNewCity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +98,31 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
             }
         });
 
-
+        // todo this button launches ChangeLocationActivity, to change the location called by weather underground.
+        mChangeLocationButton = (Button)findViewById(R.id.change_location_button);
+        mChangeLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchChangeLocationActivity = new Intent(WeatherClothingActivity.this, ChangeLocationActivity.class);
+                // this means we expect some result to be returned to the activity
+                startActivityForResult(launchChangeLocationActivity, CHANGE_LOCATION_REQUEST_CODE);
+            }
+        });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode, Intent data){
+        if (requestCode == CHANGE_LOCATION_REQUEST_CODE && resultCode == RESULT_OK) {
+            // get data from extra needed to change city
+            newCityZMW = data.getStringExtra(ChangeLocationActivity.EXTRA_NEW_LOCATION_ZMW);
+            newCityName = data.getStringExtra(ChangeLocationActivity.EXTRA_NEW_LOCATION_CITYNAME);
+            isNewCity = true;
+            if (isNewCity) { // this if statement toggles whether forecast is pulled from user's own location, or the newly chosen location
+                // todo Create new forecast based on this new data
+            }
+        }
+    }
+
 
     /**
      * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
@@ -106,6 +135,13 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
                 .build();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putString(KEY_INDEX, latitude);
+        savedInstanceState.putString(KEY_INDEX, longitude);
+    }
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -115,8 +151,8 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
         // in rare cases when a location is not available.
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
-            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            latitude = String.valueOf(mLastLocation.getLatitude());
+            longitude = String.valueOf(mLastLocation.getLongitude());
         } else {
             Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
         }
