@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -21,11 +23,17 @@ import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.NotInitializedException;
 import com.amazon.device.associates.OpenSearchPageRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONObject;
 import java.util.ArrayList;
 
-public class WeatherClothingActivity extends ListActivity {
+
+// code on retrieval of user's current location is modified from this page: http://developer.android.com/training/location/retrieve-current.html and https://github.com/googlesamples/android-play-location/blob/master/BasicLocationSample/app/src/main/java/com/google/android/gms/location/sample/basiclocationsample/MainActivity.java
+
+public class WeatherClothingActivity extends ListActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private final String TAG = "WeatherClothingActivity";
     private final String BUNDLE = "com.example.kevin.weatherclothingapp";
@@ -50,11 +58,30 @@ public class WeatherClothingActivity extends ListActivity {
     String amazonCategory;
     String temperatureDescription;
     String weatherDescription;
-
+    private static final int CHANGE_LOCATION_REQUEST_CODE = 0;
+    private Button mChangeLocationButton;
+    private static final String KEY_INDEX = "index";
     Activity a;
 
     ArrayList<String> temperatureDescriptionList = new ArrayList<>();
     ArrayList<String> iconNameArrayList = new ArrayList<>();
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+
+    /**
+     * Represents a geographical location.
+     */
+    protected static Location mLastLocation;
+
+    String latitude;
+    String longitude;
+    private String newCityName;
+    private String newCityZMW;
+    private boolean isNewCity = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +152,21 @@ public class WeatherClothingActivity extends ListActivity {
                 }
             }
         });
+
+        //  this button launches ChangeLocationActivity, to change the location called by weather underground.
+        mChangeLocationButton = (Button)findViewById(R.id.change_location_button);
+        mChangeLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchChangeLocationActivity = new Intent(WeatherClothingActivity.this, ChangeLocationActivity.class);
+                // this means we expect some result to be returned to the activity
+                startActivityForResult(launchChangeLocationActivity, CHANGE_LOCATION_REQUEST_CODE);
+            }
+        });
     }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -145,6 +186,7 @@ public class WeatherClothingActivity extends ListActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // todo this will need its own requestcode so that it can be differentiated from CHANGE_LOCATION_REQUEST_CODE. also RESULT_OK should be a resultCode, not a requestCode.
         if (requestCode == RESULT_OK){
 
             String store = data.getStringExtra(STORE);
@@ -160,10 +202,37 @@ public class WeatherClothingActivity extends ListActivity {
 
             Log.e(TAG,"chosenStore: " + chosenStore + "; chosenCategory: " + chosenCategory + "; chosenItems: " + chosenItems);
         }
-    }
-}
 
-class MAAWebViewClient extends WebViewClient {
+
+        if (requestCode == CHANGE_LOCATION_REQUEST_CODE && resultCode == RESULT_OK) {
+            // get data from extra needed to change city
+            newCityZMW = data.getStringExtra(ChangeLocationActivity.EXTRA_NEW_LOCATION_ZMW);
+            newCityName = data.getStringExtra(ChangeLocationActivity.EXTRA_NEW_LOCATION_CITYNAME);
+            isNewCity = true;
+            if (isNewCity) { // this if statement toggles whether forecast is pulled from user's own location, or the newly chosen location
+                // todo Create new forecast based on this new data
+            }
+        }
+
+    }
+
+
+
+    /**
+     * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+
+
+
+    class MAAWebViewClient extends WebViewClient {
 
     private final String TAG = "MAAWebViewClient";
 
@@ -176,5 +245,51 @@ class MAAWebViewClient extends WebViewClient {
             Log.v(TAG, "NotInitializedException error");
         }
         return false;
+    }
+}
+
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        // todo - do we need to put any data in here?
+//        savedInstanceState.putString(KEY_INDEX, latitude);
+//        savedInstanceState.putString(KEY_INDEX, longitude);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        // Provides a simple way of getting a device's location and is well suited for
+        // applications that do not require a fine-grained location and that do not need location
+        // updates. Gets the best and most recent location currently available, which may be null
+        // in rare cases when a location is not available.
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            latitude = String.valueOf(mLastLocation.getLatitude());
+            longitude = String.valueOf(mLastLocation.getLongitude());
+        } else {
+            Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
+        }
+
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 }

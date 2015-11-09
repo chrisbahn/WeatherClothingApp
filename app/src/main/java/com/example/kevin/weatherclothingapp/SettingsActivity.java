@@ -184,7 +184,7 @@ public class SettingsActivity extends Activity{
     private String getKeyFromRawResource(String requestedKey) {
         InputStream keyStream = null;
         if (requestedKey.equals("etsy_key")){
-            keyStream = this.getResources().openRawResource(R.raw.etsykey);
+            keyStream = this.getResources().openRawResource(R.raw.etsy_key);
         }
         else if (requestedKey.equals("key")) {
             keyStream = this.getResources().openRawResource(R.raw.key);

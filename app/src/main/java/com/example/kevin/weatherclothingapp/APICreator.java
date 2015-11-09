@@ -212,7 +212,7 @@ public class APICreator {
     protected String getWeatherDescription(String weatherUndergroundIcon) {
 
         String weatherDescription;
-        // todo this variable has three possibilities based on the weatherIcon from the wunderground forecast: mild, rainy, and snowy. IN the main program, weatherIcon is a BitMap, but the icon text can be pulled from the wunderground json data easily
+        // this variable has three possibilities based on the weatherIcon from the wunderground forecast: mild, rainy, and snowy.
         if (weatherUndergroundIcon.contains("rain")||weatherUndergroundIcon.contains("tstorms")) {
             weatherDescription = "rainy";
         }
@@ -268,7 +268,7 @@ public class APICreator {
     }
 
     protected String createAmazonSearchTerm(String weatherDescription, String temperatureDescription, String amazonItemsToSearch, String amazonSearchMenWomenChildren) {
-        // todo The search string defined by itemType will change to depending on a) the choice made in categoryToSearch, b) the choice made in itemToSearch, and c) the two weather-forecast variables, which will affect the phrasing of itemType, i.e. "parkas" vs. "windbreakers." Currently all the variations of itemType are the ones for mild, clear weather.
+        //  The search string defined by itemType will change to depending on a) the choice made in categoryToSearch, b) the choice made in itemToSearch, and c) the two weather-forecast variables, which will affect the phrasing of itemType, i.e. "parkas" vs. "windbreakers."
         if (weatherDescription.equals("snowy") ||temperatureDescription.equals("freezing")) {
             // You would probably dress essentially the same way in snowy or very cold weather, so the clothing options pulled from the store can be the same
             if (amazonItemsToSearch.equals("Hats")) {
@@ -376,7 +376,7 @@ public class APICreator {
     protected String getKeyFromRawResource(String requestedKey) {
         InputStream keyStream = null;
         if (requestedKey.equals("etsykey")){
-            keyStream = activity.getResources().openRawResource(R.raw.etsykey);
+            keyStream = activity.getResources().openRawResource(R.raw.etsy_key);
         }
         else if (requestedKey.equals("key")) {
             keyStream = activity.getResources().openRawResource(R.raw.key);

@@ -4,6 +4,8 @@
     <string name="new_button">New Garment</string>
     <string name="new_garment_text">Please add a new Garment.</string>
     <string name="change_city">Change City</string>
+    <string name="no_location_detected">No location detected!</string>
+    <string name="enter_new_location">Enter a new location</string>
     <string name="save">Save</string>
     <string name="action_settings">Action settings</string>
     <string name="button_text">Save</string>
