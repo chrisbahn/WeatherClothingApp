@@ -87,6 +87,7 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_clothing);
+        buildGoogleApiClient();
 
         chosenStore = AMAZON;
         chosenCategory = "mens";
@@ -98,6 +99,7 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
         String APPLICATION_KEY = apic.getKeyFromRawResource("APPLICATION_KEY");
         AssociatesAPI.initialize(new AssociatesAPI.Config(APPLICATION_KEY, this));
 
+        // todo The getWunderGroundJSONData() method in APICreator is currently hardcoded to return Minneapolis. Instead, it should be changed so that if (isNewCity = false) it uses the latitude and longitude variables grabbed by getLastLocation() to request the user's own local forecast, and if (isNewCity = true) it instead uses the ZMW variable pulled by the ChangeLocationActivity request.
         JSONObject wunderGroundJSONData = apic.getWunderGroundJSONData();
         ArrayList<Bitmap> weatherIconArrayList = apic.getWeatherIconArrayList(wunderGroundJSONData);
         ArrayList<String> forecastDayArrayList = apic.getWunderGroundStringInfo(wunderGroundJSONData, "title");
@@ -130,7 +132,7 @@ public class WeatherClothingActivity extends ListActivity implements GoogleApiCl
                     weatherDescription = apic.getWeatherDescription(iconNameArrayList.get(position)); // this variable has four possibilities based on the weatherIcon from the wunderground forecast: mild, rainy, snowy, and stormy. stormy and rainy are probably the same thing. Will need to create @getweatherDescription method to convert wunderground icon into correct  weatherDescription
                     String amazonString = apic.createAmazonSearchTerm(weatherDescription, temperatureDescription, chosenItems, chosenCategory);
                     Log.e(TAG, amazonString);
-                    // todo the category and search terms will change depending on what the user has chosen to search for. Categories available for the Amazon Mobile Associates API are found here https://developer.amazon.com/public/apis/earn/mobile-associates/docs/available-search-categories
+                    //  the category and search terms will change depending on what the user has chosen to search for. Categories available for the Amazon Mobile Associates API are found here https://developer.amazon.com/public/apis/earn/mobile-associates/docs/available-search-categories
                     //This is from https://developer.amazon.com/public/apis/earn/mobile-associates/docs/direct-linking
                     Toast t = Toast.makeText(WeatherClothingActivity.this, amazonString, Toast.LENGTH_LONG);
                     t.show();
